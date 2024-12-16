@@ -1,13 +1,16 @@
 package com.library.util;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DbConnection {
-    private static final String URL = "jdbc:mysql://mysql-18ebf45b-ouazzanchaimae-1a43.h.aivencloud.com:27468/library_db?useSSL=true&requireSSL=true";
-    private static final String USER = "avnadmin";
-    private static final String PASSWORD = "AVNS_Y5bc6dNh-WLL_uPRBFs";
+
+    private static final Dotenv dotenv = Dotenv.load(); // Charge le fichier .env
+    private static final String URL = dotenv.get("DB_URL");
+    private static final String USER = dotenv.get("DB_USER");
+    private static final String PASSWORD = dotenv.get("DB_PASSWORD");
 
     public static Connection getConnection() throws SQLException {
         try {
