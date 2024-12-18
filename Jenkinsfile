@@ -9,6 +9,22 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/OU-chaima/LibraryManager.git'
             }
         }
+        stage('Setup .env') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'DB_URL_CRED', variable: 'DB_URL'),
+                    string(credentialsId: 'DB_USER_CRED', variable: 'DB_USER'),
+                    string(credentialsId: 'DB_PASSWORD_CRED', variable: 'DB_PASSWORD')
+                ]) {
+                    sh '''
+                    echo "DB_URL=${DB_URL}" > .env
+                    echo "DB_USER=${DB_USER}" >> .env
+                    echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
+                    '''
+                    echo ".env file generated successfully!"
+                }
+            }
+        }
         stage('Build') {
             steps {
                 sh '"${MAVEN_HOME}/bin/mvn" clean compile'
@@ -16,7 +32,7 @@ pipeline {
         }
         stage('Test') {
             steps {
-                sh  '"${MAVEN_HOME}/bin/mvn" test'
+                sh '"${MAVEN_HOME}/bin/mvn" test'
             }
         }
         stage('Quality Analysis') {
