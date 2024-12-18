@@ -21,7 +21,7 @@ class BookServiceTest {
 
     @Test
     void testAddBook() {
-        Book book = new Book(1,"Java Programming", "John Doe", "Tech Publisher", "123456789", 2024,true);
+        Book book = new Book(10,"Java Programming", "John Doe", "Tech Publisher", "123456789", 2024,true);
         bookService.addBook(book);
         assertEquals(1, bookDAO.getAllBooks().size());
         assertEquals("Java Programming", bookDAO.getAllBooks().get(0).getTitle());
@@ -29,7 +29,7 @@ class BookServiceTest {
 
     @Test
     void testUpdateBook() {
-        Book book = new Book(1,"Java Programming", "John Doe", "Tech Publisher", "123456789", 2024,true);
+        Book book = new Book(10,"Java Programming", "John Doe", "Tech Publisher", "123456789", 2024,true);
         bookService.addBook(book);
         book.setTitle("Advanced Java");
         book.setAuthor("Jane Doe");
@@ -41,7 +41,7 @@ class BookServiceTest {
 
     @Test
     void testDeleteBook() {
-        Book book = new Book(1,"Java Programming", "John Doe", "Tech Publisher", "123456789", 2024,true);
+        Book book = new Book(10,"Java Programming", "John Doe", "Tech Publisher", "123456789", 2024,true);
         bookService.addBook(book);
         bookService.deleteBook(book.getId());
         assertTrue(bookDAO.getAllBooks().isEmpty());
