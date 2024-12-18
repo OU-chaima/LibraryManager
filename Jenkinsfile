@@ -9,19 +9,13 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/OU-chaima/LibraryManager.git'
             }
         }
-        stage('Setup .env') {
+        stage('Inject .env') {
             steps {
-                withCredentials([
-                    string(credentialsId: 'DB_URL_CRED', variable: 'DB_URL'),
-                    string(credentialsId: 'DB_USER_CRED', variable: 'DB_USER'),
-                    string(credentialsId: 'DB_PASSWORD_CRED', variable: 'DB_PASSWORD')
-                ]) {
+                withCredentials([file(credentialsId: 'ENV_FILE_CRED', variable: 'ENV_FILE')]) {
                     sh '''
-                    echo "DB_URL=${DB_URL}" > .env
-                    echo "DB_USER=${DB_USER}" >> .env
-                    echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
+                    cp $ENV_FILE .env
+                    echo ".env file successfully copied!"
                     '''
-                    echo ".env file generated successfully!"
                 }
             }
         }
