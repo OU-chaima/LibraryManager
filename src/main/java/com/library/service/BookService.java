@@ -8,11 +8,10 @@ import java.util.List;
 public class BookService {
     private final BookDAO bookDAO;
 
-
-    public BookService() {
-        this.bookDAO = new BookDAO();  // Initialize the bookDAO if you're using the default constructor
+    // Constructeur pour injecter BookDAO
+    public BookService(BookDAO bookDAO) {
+        this.bookDAO = bookDAO;
     }
-
 
     public void addBook(Book book) {
         bookDAO.add(book);
@@ -29,9 +28,10 @@ public class BookService {
         return bookDAO.getBookById(id)
                 .orElseGet(() -> {
                     System.out.println("Aucun livre trouvé avec l'ID " + id);
-                    return null; // ou lever une exception personnalisée
+                    return null;
                 });
     }
+
     public void deleteBook(int bookId) {
         bookDAO.delete(bookId);
     }

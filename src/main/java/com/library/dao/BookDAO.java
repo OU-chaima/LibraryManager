@@ -28,7 +28,7 @@ public class BookDAO {
     }
 
     public void delete(int bookId) {
-        String sql = "DELETE FROM books WHERE id = ?";
+        String sql = "DELETE FROM Books WHERE id = ?";
         try (Connection connection = DbConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, bookId);
@@ -54,7 +54,7 @@ public class BookDAO {
     }
 
     public void update(Book book) {
-        String sql = "UPDATE books SET title = ?, author = ?, publisher = ?, isbn = ?, publishedYear = ?,available=? WHERE id = ?";
+        String sql = "UPDATE Books SET title = ?, author = ?, publisher = ?, isbn = ?, publishedYear = ?, available = ? WHERE id = ?";
         try (Connection connection = DbConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, book.getTitle());
@@ -62,8 +62,8 @@ public class BookDAO {
             statement.setString(3, book.getPublisher());
             statement.setString(4, book.getIsbn());
             statement.setInt(5, book.getPublishedYear());
-            statement.setInt(6, book.getId());
-            statement.setBoolean(7, book.isAvailable());
+            statement.setBoolean(6, book.isAvailable());
+            statement.setInt(7, book.getId());
             statement.executeUpdate();
         } catch (SQLException e) {
             System.err.println("Erreur lors de la mise à jour du livre : " + e.getMessage());
@@ -72,7 +72,7 @@ public class BookDAO {
 
     public List<Book> getAllBooks() {
         List<Book> books = new ArrayList<>();
-        String sql = "SELECT * FROM books";
+        String sql = "SELECT * FROM Books";
         try (Connection connection = DbConnection.getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {

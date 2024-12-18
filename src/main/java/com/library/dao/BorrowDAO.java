@@ -4,14 +4,19 @@ package com.library.dao;
 import com.library.model.Book;
 import com.library.model.Borrow;
 import com.library.model.Student;
+import com.library.service.BorrowService;
 import com.library.util.DbConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.logging.Logger;
+
+import static com.mysql.cj.conf.PropertyKey.logger;
 
 public class BorrowDAO {
-
+    private static final Logger logger = Logger.getLogger(BorrowService.class.getName());
     // Récupérer tous les emprunts
     public List<Borrow> getAllBorrows() {
         List<Borrow> borrows = new ArrayList<>();
@@ -52,6 +57,10 @@ public class BorrowDAO {
     }
 
     public void addBorrow(Borrow borrow) {
+        if (!borrow.getBook().isAvailable()) {
+            throw new IllegalArgumentException("Le livre n'est pas disponible.");
+        }
+
         String query = "INSERT INTO Borrows (student_id, book_id, borrowDate, returnDate) VALUES (?, ?, ?, ?)";
         try (Connection connection = DbConnection.getConnection();
              PreparedStatement stmt = connection.prepareStatement(query)) {
@@ -60,18 +69,26 @@ public class BorrowDAO {
             stmt.setInt(2, borrow.getBook().getId());
             stmt.setDate(3, new java.sql.Date(borrow.getBorrowDate().getTime()));
 
-            // If returnDate is null, set it as NULL in the database
-            if (borrow.getReturnDate() != null) {
-                stmt.setDate(4, new java.sql.Date(borrow.getReturnDate().getTime()));
+            // Auto-set returnDate if null
+            if (borrow.getReturnDate() == null) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(borrow.getBorrowDate());
+                calendar.add(Calendar.DAY_OF_YEAR, 14);
+                stmt.setDate(4, new java.sql.Date(calendar.getTime().getTime()));
             } else {
-                stmt.setNull(4, java.sql.Types.NULL);
+                stmt.setDate(4, new java.sql.Date(borrow.getReturnDate().getTime()));
             }
 
             stmt.executeUpdate();
+
+            // Marquer le livre comme non disponible
+            borrow.getBook().setAvailable(false);
+            new BookDAO().update(borrow.getBook());
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.severe("Erreur lors de l'ajout de l'emprunt");
         }
     }
+
 
     public void save(Borrow borrow) {
         addBorrow(borrow);

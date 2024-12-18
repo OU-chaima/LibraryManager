@@ -2,12 +2,11 @@ package com.library.service;
 
 import com.library.dao.StudentDAO;
 import com.library.model.Student;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
 public class StudentService {
-    private StudentDAO studentDAO;
+    private final StudentDAO studentDAO;
 
     // Constructeur
     public StudentService() {
@@ -37,8 +36,13 @@ public class StudentService {
         studentDAO.updateStudent(student);
     }
     public void deleteStudent(int id) {
+        Optional<Student> student = studentDAO.getStudentById(id);
+        if (student.isEmpty()) {
+            throw new IllegalArgumentException("L'étudiant avec l'ID " + id + " n'existe pas.");
+        }
         studentDAO.deleteStudent(id);
     }
+
     public List<Student> getAllStudents() {
         return studentDAO.getAllStudents();
     }

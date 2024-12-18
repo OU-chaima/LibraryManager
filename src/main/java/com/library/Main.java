@@ -1,5 +1,6 @@
 package com.library;
 
+import com.library.dao.BookDAO;
 import com.library.service.BorrowService;
 import com.library.service.BookService;
 import com.library.service.StudentService;
@@ -14,9 +15,8 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-
-        // Création des services
-        BookService bookService = new BookService();
+        BookDAO bookDAO=new BookDAO();
+        BookService bookService = new BookService(bookDAO);
         StudentService studentService = new StudentService();
         BorrowDAO borrowDAO = new BorrowDAO();
         BorrowService borrowService = new BorrowService(borrowDAO);
