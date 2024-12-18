@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/OU-chaima/LibraryManager.git'
+                git branch: 'main', url: 'https://github.com/OU-chaima/LibraryManager.git'
             }
         }
         stage('Build') {
