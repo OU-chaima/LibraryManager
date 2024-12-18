@@ -16,13 +16,13 @@ pipeline {
         }
         stage('Test') {
             steps {
-                sh '${MAVEN_HOME}/bin/mvn test'
+                sh  '"${MAVEN_HOME}/bin/mvn" test'
             }
         }
         stage('Quality Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh '${MAVEN_HOME}/bin/mvn sonar:sonar'
+                    sh '"${MAVEN_HOME}/bin/mvn" sonar:sonar'
                 }
             }
         }
