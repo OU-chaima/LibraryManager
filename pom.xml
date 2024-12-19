@@ -66,9 +66,10 @@
     <maven.compiler.release>17</maven.compiler.release>
 
       <!-- Configuration SonarQube -->
-      <sonar.jacoco.reportPaths>target/jacoco.exec</sonar.jacoco.reportPaths> <!-- JaCoCo report path -->
-      <sonar.junit.reportPaths>target/test-classes</sonar.junit.reportPaths> <!-- JUnit report path -->
-      <sonar.java.binaries>target/classes</sonar.java.binaries> <!-- Binaries for analysis -->
+
+      <sonar.junit.reportPaths>target/surefire-reports</sonar.junit.reportPaths>
+
+
   </properties>
 
   <dependencies>
