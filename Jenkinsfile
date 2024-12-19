@@ -44,12 +44,12 @@ pipeline {
     }
     post {
         success {
-            emailext to: 'ouazzanchaimae@gmail.com',
+            emailext to: 'ouazzanadam24@gmail.com',
                 subject: 'Build Success',
                 body: 'Le build a été complété avec succès.'
         }
         failure {
-            emailext to: 'ouazzanchaimae@gmail.com',
+            emailext to: 'ouazzanadam24@gmail.com',
                 subject: 'Build Failed',
                 body: 'Le build a échoué.'
         }
