@@ -4,6 +4,7 @@ import com.library.dao.BookDAO;
 import com.library.model.Book;
 
 import java.util.List;
+import java.util.Optional;
 
 public class BookService {
     private final BookDAO bookDAO;
@@ -24,14 +25,9 @@ public class BookService {
         }
     }
 
-    public Book findBookById(int id) {
-        return bookDAO.getBookById(id)
-                .orElseGet(() -> {
-                    System.out.println("Aucun livre trouvé avec l'ID " + id);
-                    return null;
-                });
+    public Optional<Book> findBookById(int bookId) {
+        return bookDAO.getBookById(bookId); // Retourne directement l'Optional fourni par BookDAO
     }
-
     public void deleteBook(int bookId) {
         bookDAO.delete(bookId);
     }

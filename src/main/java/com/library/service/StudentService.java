@@ -13,36 +13,48 @@ public class StudentService {
         this.studentDAO = new StudentDAO();
     }
 
-    
-
     // Ajouter un étudiant
     public void addStudent(Student student) {
+        if (studentDAO.getStudentById(student.getId()).isPresent()) {
+            throw new IllegalArgumentException("Un étudiant avec l'ID " + student.getId() + " existe déjà.");
+        }
         studentDAO.addStudent(student);
     }
 
-    // Display all students
+    // Afficher tous les étudiants
     public void displayStudents() {
         List<Student> students = studentDAO.getAllStudents();
-        for (Student student : students) {
-            System.out.println("ID: " + student.getId() + " | Nom: " + student.getName());
+        if (students.isEmpty()) {
+            System.out.println("Aucun étudiant trouvé.");
+        } else {
+            students.forEach(student ->
+                    System.out.println("ID: " + student.getId() + " | Nom: " + student.getName())
+            );
         }
     }
 
-    public Student findStudentById(int id) {
-        Optional<Student> studentOpt = studentDAO.getStudentById(id);
-        return studentOpt.orElse(null); // Retourne l'étudiant s'il existe, sinon retourne null.
+    // Trouver un étudiant par son ID
+    public Optional<Student> findStudentById(int id) {
+        return studentDAO.getStudentById(id);
     }
+
+    // Mettre à jour un étudiant
     public void updateStudent(Student student) {
+        if (studentDAO.getStudentById(student.getId()).isEmpty()) {
+            throw new IllegalArgumentException("L'étudiant avec l'ID " + student.getId() + " n'existe pas.");
+        }
         studentDAO.updateStudent(student);
     }
+
+    // Supprimer un étudiant
     public void deleteStudent(int id) {
-        Optional<Student> student = studentDAO.getStudentById(id);
-        if (student.isEmpty()) {
+        if (studentDAO.getStudentById(id).isEmpty()) {
             throw new IllegalArgumentException("L'étudiant avec l'ID " + id + " n'existe pas.");
         }
         studentDAO.deleteStudent(id);
     }
 
+    // Récupérer tous les étudiants
     public List<Student> getAllStudents() {
         return studentDAO.getAllStudents();
     }
