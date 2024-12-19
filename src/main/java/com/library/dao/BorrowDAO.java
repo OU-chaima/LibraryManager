@@ -1,37 +1,33 @@
-
 package com.library.dao;
 
 import com.library.model.Book;
 import com.library.model.Borrow;
 import com.library.model.Student;
-import com.library.service.BorrowService;
 import com.library.util.DbConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
 
-import static com.mysql.cj.conf.PropertyKey.logger;
-
 public class BorrowDAO {
-    private static final Logger logger = Logger.getLogger(BorrowService.class.getName());
-    // Récupérer tous les emprunts
+
+    private static final Logger logger = Logger.getLogger(BorrowDAO.class.getName());
+
     public List<Borrow> getAllBorrows() {
         List<Borrow> borrows = new ArrayList<>();
         String query = "SELECT * FROM Borrows";
         try (Connection connection = DbConnection.getConnection();
              Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
+
             while (rs.next()) {
                 int borrowId = rs.getInt("id");
-                int studentId = rs.getInt("student_id");  // Récupérer l'ID de l'étudiant
-                int bookId = rs.getInt("book_id");        // Récupérer l'ID du livre
+                int studentId = rs.getInt("student_id");
+                int bookId = rs.getInt("book_id");
                 Date borrowDate = rs.getDate("borrowDate");
                 Date returnDate = rs.getDate("returnDate");
 
-                // Charger l'étudiant et le livre à partir de leurs ID
                 Student student = getStudentById(studentId);
                 Book book = getBookById(bookId);
 
@@ -39,21 +35,9 @@ public class BorrowDAO {
                 borrows.add(borrow);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.severe("Erreur lors de la récupération des emprunts : " + e.getMessage());
         }
         return borrows;
-    }
-
-    // Méthode pour récupérer un étudiant par son ID
-    private Student getStudentById(int studentId) {
-        StudentDAO studentDAO = new StudentDAO();
-        return studentDAO.getStudentById(studentId).orElse(null);
-    }
-
-    // Méthode pour récupérer un livre par son ID
-    private Book getBookById(int bookId) {
-        BookDAO bookDAO = new BookDAO();
-        return bookDAO.getBookById(bookId).orElse(null);
     }
 
     public void addBorrow(Borrow borrow) {
@@ -68,29 +52,48 @@ public class BorrowDAO {
             stmt.setInt(1, borrow.getStudent().getId());
             stmt.setInt(2, borrow.getBook().getId());
             stmt.setDate(3, new java.sql.Date(borrow.getBorrowDate().getTime()));
-
-            // Auto-set returnDate if null
-            if (borrow.getReturnDate() == null) {
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(borrow.getBorrowDate());
-                calendar.add(Calendar.DAY_OF_YEAR, 14);
-                stmt.setDate(4, new java.sql.Date(calendar.getTime().getTime()));
-            } else {
-                stmt.setDate(4, new java.sql.Date(borrow.getReturnDate().getTime()));
-            }
+            stmt.setDate(4, borrow.getReturnDate() != null
+                    ? new java.sql.Date(borrow.getReturnDate().getTime())
+                    : null);
 
             stmt.executeUpdate();
-
-            // Marquer le livre comme non disponible
             borrow.getBook().setAvailable(false);
             new BookDAO().update(borrow.getBook());
         } catch (SQLException e) {
-            logger.severe("Erreur lors de l'ajout de l'emprunt");
+            logger.severe("Erreur lors de l'ajout de l'emprunt : " + e.getMessage());
         }
     }
 
+    public void deleteAllBorrows() {
+        String query = "DELETE FROM Borrows";
+        try (Connection connection = DbConnection.getConnection();
+             Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(query);
+        } catch (SQLException e) {
+            logger.severe("Erreur lors de la suppression des emprunts : " + e.getMessage());
+        }
+    }
 
-    public void save(Borrow borrow) {
-        addBorrow(borrow);
+    public void updateBorrow(Borrow borrow) {
+        String query = "UPDATE Borrows SET returnDate = ? WHERE id = ?";
+        try (Connection connection = DbConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+
+            stmt.setDate(1, new java.sql.Date(borrow.getReturnDate().getTime()));
+            stmt.setInt(2, borrow.getId());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            logger.severe("Erreur lors de la mise à jour de l'emprunt : " + e.getMessage());
+        }
+    }
+
+    private Student getStudentById(int studentId) {
+        StudentDAO studentDAO = new StudentDAO();
+        return studentDAO.getStudentById(studentId).orElse(null);
+    }
+
+    private Book getBookById(int bookId) {
+        BookDAO bookDAO = new BookDAO();
+        return bookDAO.getBookById(bookId).orElse(null);
     }
 }

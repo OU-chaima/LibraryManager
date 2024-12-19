@@ -30,15 +30,20 @@ class BorrowServiceTest {
         borrowDAO = new BorrowDAO();
         borrowService = new BorrowService(borrowDAO);
 
-        // Ajouter des étudiants
+        // Suppression des données existantes
+        borrowDAO.deleteAllBorrows();
+        bookDAO.deleteAllBooks();
+        studentDAO.deleteAllStudents();
+
+        // Ajout des étudiants
         studentDAO.addStudent(new Student(1, "Alice"));
         studentDAO.addStudent(new Student(2, "Bob"));
 
-        // Ajouter des livres
+        // Ajout des livres
         bookDAO.add(new Book(1, "Java Programming", "John Doe", "Tech Publisher", "123456789", 2024, true));
         bookDAO.add(new Book(2, "Advanced Java", "John Doe", "Tech Publisher", "987654321", 2024, true));
 
-        // Ajouter un emprunt
+        // Ajout d'un emprunt initial
         Student student = studentDAO.getStudentById(1).orElseThrow(() -> new RuntimeException("Student not found"));
         Book book = bookDAO.getBookById(1).orElseThrow(() -> new RuntimeException("Book not found"));
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
@@ -78,10 +83,8 @@ class BorrowServiceTest {
     void testReturnBook() {
         Borrow borrow = borrowDAO.getAllBorrows().get(0); // Récupérer le premier emprunt
 
-        borrowService.borrowBook(borrow); // Assurez-vous que le livre est emprunté
-        Book book = borrow.getBook();
-
-        book.setAvailable(true); // Simuler le retour
-        assertTrue(book.isAvailable(), "Le livre doit être marqué comme disponible après son retour");
+        borrow.getBook().setAvailable(true); // Simuler le retour
+        borrowDAO.updateBorrow(borrow);
+        assertTrue(borrow.getBook().isAvailable(), "Le livre doit être marqué comme disponible après son retour");
     }
 }

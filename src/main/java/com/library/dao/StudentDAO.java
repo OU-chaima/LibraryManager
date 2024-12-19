@@ -98,4 +98,16 @@ public class StudentDAO {
         String name = resultSet.getString("name");
         return new Student(id, name);
     }
+
+    public void deleteAllStudents() {
+        String sql = "DELETE FROM Students";  // Requête pour supprimer tous les étudiants
+
+        try (Connection connection = DbConnection.getConnection();
+             Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(sql);  // Exécution de la requête de suppression
+        } catch (SQLException e) {
+            e.printStackTrace();  // Gestion des erreurs
+        }
+    }
+
 }

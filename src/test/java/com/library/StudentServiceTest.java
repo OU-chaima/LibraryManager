@@ -1,6 +1,5 @@
 package com.library;
 
-import com.library.dao.StudentDAO;
 import com.library.model.Student;
 import com.library.service.StudentService;
 import com.library.util.DbConnection;
@@ -26,7 +25,11 @@ class StudentServiceTest {
     private void cleanDatabase() {
         try (Connection connection = DbConnection.getConnection();
              Statement stmt = connection.createStatement()) {
+            stmt.execute("DELETE FROM Borrows");
+            // Suppression de toutes les lignes de la table Students
             stmt.execute("DELETE FROM Students");
+            // Réinitialiser l'auto-incrémentation
+            stmt.execute("ALTER TABLE Students AUTO_INCREMENT = 1");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -34,41 +37,53 @@ class StudentServiceTest {
 
     @Test
     void testAddStudent() {
-        Student student = new Student(1, "Alice");
+        // Utilisation d'un ID dynamique pour éviter les conflits
+        int studentId = (int) (Math.random() * 1000); // Générer un ID aléatoire
+        Student student = new Student(studentId, "Alice");
         studentService.addStudent(student);
 
-        Student retrievedStudent = studentService.findStudentById(1);
-        assertNotNull(retrievedStudent);
+        Optional<Student> retrievedStudentOpt = studentService.findStudentById(studentId);
+        assertTrue(retrievedStudentOpt.isPresent(), "L'étudiant n'a pas été trouvé.");
+        Student retrievedStudent = retrievedStudentOpt.get(); // Accéder à l'étudiant depuis l'Optional
         assertEquals("Alice", retrievedStudent.getName());
     }
 
     @Test
     void testUpdateStudent() {
-        Student student = new Student(1, "Alice");
+        // Utilisation d'un ID dynamique pour éviter les conflits
+        int studentId = (int) (Math.random() * 1000);
+        Student student = new Student(studentId, "Alice");
         studentService.addStudent(student);
 
-        Student updatedStudent = new Student(1, "Bob");
+        Student updatedStudent = new Student(studentId, "Bob");
         studentService.updateStudent(updatedStudent);
 
-        Student retrievedStudent = studentService.findStudentById(1);
-        assertNotNull(retrievedStudent);
+        Optional<Student> retrievedStudentOpt = studentService.findStudentById(studentId);
+        assertTrue(retrievedStudentOpt.isPresent(), "L'étudiant mis à jour n'a pas été trouvé.");
+        Student retrievedStudent = retrievedStudentOpt.get(); // Accéder à l'étudiant depuis l'Optional
         assertEquals("Bob", retrievedStudent.getName());
     }
 
     @Test
     void testDeleteStudent() {
-        Student student = new Student(1, "Alice");
+        // Utilisation d'un ID dynamique pour éviter les conflits
+        int studentId = (int) (Math.random() * 1000);
+        Student student = new Student(studentId, "Alice");
         studentService.addStudent(student);
 
-        studentService.deleteStudent(1);
+        studentService.deleteStudent(studentId);
 
-        assertNull(studentService.findStudentById(1));
+        Optional<Student> retrievedStudentOpt = studentService.findStudentById(studentId);
+        assertFalse(retrievedStudentOpt.isPresent(), "L'étudiant n'a pas été supprimé.");
     }
 
     @Test
     void testGetAllStudents() {
-        Student student1 = new Student(1, "Alice");
-        Student student2 = new Student(2, "Bob");
+        // Utilisation d'IDs dynamiques pour éviter les conflits
+        int studentId1 = (int) (Math.random() * 1000);
+        int studentId2 = (int) (Math.random() * 1000);
+        Student student1 = new Student(studentId1, "Alice");
+        Student student2 = new Student(studentId2, "Bob");
         studentService.addStudent(student1);
         studentService.addStudent(student2);
 

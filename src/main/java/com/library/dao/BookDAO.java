@@ -96,4 +96,14 @@ public class BookDAO {
         book.setAvailable(resultSet.getBoolean("available"));
         return book;
     }
+
+    public void deleteAllBooks() {
+        try (Connection connection = DbConnection.getConnection();
+             Statement stmt = connection.createStatement()) {
+            stmt.execute("DELETE FROM Books");  // Supprimer tous les livres
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
