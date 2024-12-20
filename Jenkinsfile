@@ -49,7 +49,7 @@ pipeline {
                         subject: "Build SUCCESS: ${env.JOB_NAME} ${env.BUILD_NUMBER}",
                         body: "Good news! The build for ${env.JOB_NAME} completed successfully.",
                         to: 'ouazzanadam24@gmail.com',
-                        replyTo: 'no-reply@yourdomain.com',
+                        replyTo: 'ouazzanchaimae@gmail.com',
                         mimeType: 'text/html'
                     )
                 }
@@ -60,7 +60,7 @@ pipeline {
                         subject: "Build FAILED: ${env.JOB_NAME} ${env.BUILD_NUMBER}",
                         body: "Unfortunately, the build for ${env.JOB_NAME} has failed. Please check Jenkins logs for more details.",
                         to: 'ouazzanadam24@gmail.com',
-                        replyTo: 'no-reply@yourdomain.com',
+                        replyTo: 'ouazzanchaimae@gmail.com',
                         mimeType: 'text/html'
                     )
                 }
