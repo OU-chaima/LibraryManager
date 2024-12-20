@@ -43,15 +43,27 @@ pipeline {
         }
     }
     post {
-        success {
-            emailext to: 'ouazzanadam24@gmail.com',
-                subject: 'Build Success',
-                body: 'Le build a été complété avec succès.'
-        }
-        failure {
-            emailext to: 'ouazzanadam24@gmail.com',
-                subject: 'Build Failed',
-                body: 'Le build a échoué.'
-        }
+            success {
+                script {
+                    emailext(
+                        subject: "Build SUCCESS: ${env.JOB_NAME} ${env.BUILD_NUMBER}",
+                        body: "Good news! The build for ${env.JOB_NAME} completed successfully.",
+                        to: 'ouazzanadam24@gmail.com',
+                        replyTo: 'no-reply@yourdomain.com',
+                        mimeType: 'text/html'
+                    )
+                }
+            }
+            failure {
+                script {
+                    emailext(
+                        subject: "Build FAILED: ${env.JOB_NAME} ${env.BUILD_NUMBER}",
+                        body: "Unfortunately, the build for ${env.JOB_NAME} has failed. Please check Jenkins logs for more details.",
+                        to: 'ouazzanadam24@gmail.com',
+                        replyTo: 'no-reply@yourdomain.com',
+                        mimeType: 'text/html'
+                    )
+                }
+            }
     }
 }
